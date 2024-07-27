@@ -1,0 +1,3 @@
+docker exec -it kafka-0 bash
+kafka-topics.sh --bootstrap-server localhost:9092 --list
+python /workspaces/Streaming-spark-kafka-elasticsearch-kibana-minio-docker/kafka_admin_client/kafka_admin_client.py

@@ -1,0 +1,19 @@
+# Ignore virtual environment
+.coins_env/
+
+# Ignore Terraform files
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/.keys
+terraform/terraform*
+
+# Ignore Airflow logs and plugins
+airflow/logs/
+airflow/plugins/
+airflow/dags/__pycache__/
+airflow/.env
+
+# Ignore specific files and directories
+jdk-11.0.2/
+jars/
+elasticsearch-spark-30_2.12-7.15.1.jar
