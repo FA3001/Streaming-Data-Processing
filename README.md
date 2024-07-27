@@ -1,4 +1,3 @@
-
 # Streaming Data Processing
 
 ## Used Technologies and Services
@@ -14,10 +13,6 @@
 - MinIO
 - Docker
 
----
-- OS: Centos7
-- IDE: PyCharm, VSCode
-
 ## Overview
 
 - Take a compressed data source from a URL
@@ -28,29 +23,21 @@
 - Write the streaming data to **MinIO (AWS Object Storage)**.
 - Use **Apache Airflow** to orchestrate the whole data pipeline.
 
-![image](https://github.com/dogukannulu/streaming_data_processing/assets/91257958/16bb60fb-314d-4d08-8873-d7f0c00bf51f)
-
+![image](https://github.com/user-attachments/assets/331227bb-536d-4a68-bdc4-1971eb44a758)
 
 
 
 ## Steps of the Project
 
-- We should have Apache Kafka, Apache Spark, Apache Hadoop installed locally. Elasticsearch, Kibana and MinIO can be used via docker-compose.yaml.
+- All services used via Docker and Makefile.
 
 - All steps of the data pipeline can be seen via Airflow DAG. They are all explained here as well.
 
-- All scripts were written according to my local file/folder locations. But all mentioned scripts can be found in this repo.
-
-To make **Apache Airflow, Docker, Apache Hadoop, Apache Kafka and Apache Zookeeper** available, we should run the following commands (This step may differ on how we installed these locally):
+To run all sevices use:
 ```bash
-sudo systemctl start docker
-sudo systemctl start airflow
-sudo systemctl start airflow-scheduler
-sudo systemctl start zookeeper
-sudo systemctl start kafka
-start-all.sh
-cd /<location_of_docker_compose.yaml>/ && docker-compose up -d 
+  make start-all
 ```
+
 
 
 ### Download the Data:
@@ -88,13 +75,11 @@ Since PySpark gets the data from HDFS, we should put the local folder to HDFS
 as well using the following command:
 
 ```bash
-hdfs dfs -put /<location_of_KETI>/KETI/ /<desired_location_to_put_KETI>/
+docker exec -it <hdfs_container_id> bash
+hdfs dfs -mkdir -p /user/hadoop/keti/
+hdfs dfs -put /path/in/container/KETI /user/hadoop/keti/
 ```
 We can browse for the HDFS location we put the data in via `localhost:9000`
-
-**_NOTE:_**  The Spark and Airflow scripts are run inside a virtualenv. The purpose of doing this 
-is not having a library-related issue while running these. The related libraries can be installed
-globally as well.
 
 ### Running the Read-Write PySpark/Pandas Script:
 Both `read_and_write_pandas.py` and `read_and_write_spark.py` can be used to modify the initial
@@ -106,7 +91,8 @@ We can check `localhost:8088` to see the resource usage (**YARN**) of the runnin
 
 Written data:
 
-![sensors](img/sensors.PNG)
+![image](https://github.com/user-attachments/assets/f804526d-10a8-4f38-b361-f51ab5bcf0a1)
+
 
 **_NOTE:_** With this step, we have our data ready. You can see it as `sensors.csv` in this repo.
 
@@ -122,19 +108,9 @@ We can check if topic has been created as follows:
 kafka-topics.sh --bootstrap-server localhost:9092 --list
 ```
 
-### Running data-generator:
-
-Instructions on how to install data-generator can be found [here](https://github.com/dogukannulu/data-generator)
-
-This repo has been forked from [erkansirin78](https://github.com/erkansirin78). Many thanks to him since 
-this script successfully simulates a streaming data.
-
-We can directly run the data-generator script by running `data_generator.sh`. We should use
-the location of data-generator.
-
 Streaming data example:
 
-![streaming_data_sample](img/sample_streaming_data.PNG)
+![image](https://github.com/user-attachments/assets/995aa967-98d1-4ae4-ba27-ee7d5a4fd847)
 
 ### Writing data to Elasticsearch using Spark Streaming:
 
@@ -145,14 +121,14 @@ All the methods and operations are described with comments and docstrings in
 
 Sample Elasticsearch data:
 
-![sample_ES_data](img/es_sample_data.PNG)
+![image](https://github.com/user-attachments/assets/f787dc26-89d0-447b-a311-31a4af7e24df)
 
 We can run this script by running `spark_to_elasticsearch.sh`. This script also runs the 
 Spark virtualenv.
 
 Logs of the script:
 
-![log_sample](img/log_sample.PNG)
+![image](https://github.com/user-attachments/assets/15a4b2ea-e036-449a-81fc-c54094a7f826)
 
 ### Writing data to MinIO using Spark Streaming:
 
@@ -166,7 +142,7 @@ We can run this script by running `spark_to_minio.sh`. This script also runs the
 Spark virtualenv.
 
 Sample MinIO data:
-![sample_minio_data](img/minio_sample.PNG)
+![image](https://github.com/user-attachments/assets/d4937d2d-c16b-472b-a2fd-06eee06ba274)
 
 **_NOTE:_** We can also check the running Spark jobs via `localhost:4040`
 
@@ -177,9 +153,9 @@ explained data pipeline with one click.
 
 Airflow DAG:
 
-![airflow_dag_1](img/dag_1.PNG)
+![image](https://github.com/user-attachments/assets/d8f6879b-b0eb-419c-ab58-1421aba43bce)
 
-![airflow_dag_2](img/dag_2.PNG)
+![image](https://github.com/user-attachments/assets/41208aac-2c2f-45df-b564-2ff8f21fafae)
 
 
 Running streaming applications on Airflow may create some issues. In that case, we can run
@@ -197,10 +173,14 @@ GET /_cat/indices?v
 
 We can create a new dashboard using the data in office_input index. Here are some sample graphs:
 
-![dashboard1](img/dashboard1.PNG)
-![dashboard2](img/dashboard2.PNG)
-![dashboard3](img/dashboard3.PNG)
-![dashboard4](img/dashboard4.PNG)
+![image](https://github.com/user-attachments/assets/83f3e0f7-ce79-4f12-b485-9c7850d264a9)
+
+![image](https://github.com/user-attachments/assets/cf4ac274-5493-435b-bce1-a2f6b856185b)
+
+![image](https://github.com/user-attachments/assets/3df2c251-c8f9-48d6-bbea-149c59729fe6)
+
+![image](https://github.com/user-attachments/assets/e5b1e4dd-d74c-4ba0-81c5-357e5271368d)
+
 
 Which contains:
 - Percentage of Movement Pie Chart
